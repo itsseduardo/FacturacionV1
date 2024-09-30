@@ -1,26 +1,31 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import Styles from '../estilos/Styles'; // Importa los estilos globales
 
 export default function ReportesScreen({ navigation }) {
   return (
-    <View style={styles.container}>
-      <Text>Reportes</Text>
-      <Button
-        title="Ver Reporte de Ventas"
+    <ImageBackground 
+      source={require('../assets/chart_17010925.png')}  // Cambia la ruta según sea necesario
+      style={Styles.container} 
+      resizeMode  // Asegúrate de que la imagen cubra toda la pantalla
+    >
+      <Text style={Styles.titleText}>Reportes</Text>  
+
+      {/* Botón "Ver Reporte de Ventas" con estilos globales */}
+      <TouchableOpacity 
+        style={Styles.button} 
         onPress={() => navigation.navigate('ReporteVentas')}
-      />
-      <Button
-        title="Ver Reporte de Inventario"
+      >
+        <Text style={Styles.buttonText}>Ver Reporte de Ventas</Text>  
+      </TouchableOpacity>
+
+      {/* Botón "Ver Reporte de Inventario" con estilos globales */}
+      <TouchableOpacity 
+        style={Styles.button} 
         onPress={() => navigation.navigate('ReporteInventario')}
-      />
-    </View>
+      >
+        <Text style={Styles.buttonText}>Ver Reporte de Inventario</Text>  
+      </TouchableOpacity>
+    </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

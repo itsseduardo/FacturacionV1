@@ -30,8 +30,8 @@ export default function App() {
           iconName = focused ? 'stats-chart' : 'stats-chart-outline';
         } else if (route.name === 'Clientes') {
           iconName = focused ? 'people' : 'people-outline';
-        } else if (route.name === 'Configuración') {
-          iconName = focused ? 'settings' : 'settings-outline';  // Revisa si este nombre es correcto
+        } else if (route.name === 'Configuraciones') {
+          iconName = focused ? 'settings' : 'settings-outline';  //Oe Revisa si este nombre es correcto
         }
   
         return <Ionicons name={iconName} size={size} color={color} />;

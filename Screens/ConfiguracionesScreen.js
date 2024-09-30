@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, Image } from 'react-native';
 import Styles from '../estilos/Styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -17,17 +17,20 @@ export default function ConfiguracionesScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Pantalla de Configuraciones</Text>
-      <Button title="Cerrar sesión" onPress={handleLogout} />
+    <View style={Styles.container}>
+      {/* Agregar imagen */}
+      <Image 
+        source={require('../assets/gear_850666.png')} 
+        style={Styles.image}  // Usar el estilo global para la imagen
+      />
+      
+      {/* Texto centrado */}
+      <Text style={Styles.titleText}>Pantalla de Configuraciones</Text>
+      
+      {/* Botón de cerrar sesión */}
+      <View style={Styles.buttonContainer}>
+        <Button title="Cerrar sesión" onPress={handleLogout} />
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

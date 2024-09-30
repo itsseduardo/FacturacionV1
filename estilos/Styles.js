@@ -11,32 +11,28 @@ const Styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'black',
     marginBottom: 16,
   },
   button: {
-    backgroundColor: 'blue', // Color de fondo del botón
-    paddingVertical: 10,        // Espaciado vertical
-    paddingHorizontal: 20,      // Espaciado horizontal
-    borderRadius: 5,            // Borde redondeado
-    marginVertical: 10,         // Margen vertical
-    alignItems: 'center',       // Alinear texto al centro
+    backgroundColor: '#3498db',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
   },
   buttonText: {
-    color: 'white',             // Color del texto
-    fontSize: 16,               // Tamaño del texto
-    fontWeight: 'bold',         // Negrita
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    width: '100%',
+  image: {
+    width: 450, // Cambia el ancho según lo que necesites
+    height: 500, // Cambia la altura según lo que necesites
+    resizeMode: 'hover', // Mantiene la proporción de la imagen
     marginVertical: 10,
-    borderRadius: 5,
   },
-  
 });
 
 export default Styles;
