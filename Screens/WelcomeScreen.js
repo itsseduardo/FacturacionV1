@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WelcomeScreen({ navigation }) {
@@ -32,18 +32,57 @@ export default function WelcomeScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Bienvenido a la app de Facturación e Inventario</Text>
-      <Button title="Iniciar sesión" onPress={handleLogin} />
-      <Button title="Crear cuenta" onPress={() => alert('Funcionalidad de crear cuenta')} />
+    <ImageBackground 
+    source={require('../assets/Welcome.jpg')}  // Asegúrate de que la imagen esté en la carpeta assets
+    style={styles.backgroundImage}
+    resizeMode="cover"
+  >
+    <View style={styles.overlay}>
+      <Text style={styles.title}>Bienvenido a su app de Facturación e Inventario</Text>
+
+      {/* Botón de Iniciar Sesión */}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Iniciar sesión</Text>
+      </TouchableOpacity>
+
+      {/* Botón de Crear Cuenta */}
+      <TouchableOpacity style={styles.button} onPress={() => alert('Funcionalidad de crear cuenta')}>
+        <Text style={styles.buttonText}>Crear cuenta</Text>
+      </TouchableOpacity>
     </View>
+  </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Añade un overlay semi-transparente
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
