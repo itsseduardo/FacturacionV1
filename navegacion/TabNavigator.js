@@ -54,12 +54,10 @@ export default function App() {
         })}
     >
       <Tab.Screen name="Productos" component={ProductosStack} options={{ headerShown: false }}/>
-      
       <Tab.Screen name="Facturación" component={FacturacionStack} options={{ headerShown: false }}/>
-
-      <Tab.Screen name="Reportes" component={ReportesScreen} />
-      <Tab.Screen name="Clientes" component={ClientesScreen} />
-      <Tab.Screen name="Configuraciones" component={ConfiguracionesScreen} />
+      <Tab.Screen name="Reportes" component={ReportesScreen} options={{ headerShown: false }}/>
+      <Tab.Screen name="Clientes" component={ClientesScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Configuraciones" component={ConfiguracionesScreen} options={{ headerShown: false }}/>
       </Tab.Navigator>
     
   );

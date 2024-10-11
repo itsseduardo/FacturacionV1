@@ -1,48 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ImageBackground, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ImageBackground } from 'react-native';
+import { iniciarSesion, registrarUsuario } from '../utils/autenticacion'; // Importa las funciones
 
 export default function WelcomeScreen({ navigation }) {
-  
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const checkSession = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem('userToken');
-      if (userToken) {
-        // Si ya ha iniciado sesión, navega al TabNavigator
-        navigation.replace('MainApp');
-      }
-    } catch (e) {
-      console.log('Error al recuperar la sesión');
-    }
-  };
-
-  useEffect(() => {
-    checkSession();
-  }, []);
-
+  // Manejar inicio de sesión
   const handleLogin = async () => {
-    try {
-      // Simula el inicio de sesión guardando un token de usuario
-      await AsyncStorage.setItem('userToken', 'abc123');
-      // Navega a la app principal
-      navigation.replace('MainApp');
-    } catch (e) {
-      console.log('Error al iniciar sesión');
+    if (email && password) {
+      try {
+        await iniciarSesion(email, password);
+        Alert.alert('Inicio de sesión exitoso', 'Has iniciado sesión correctamente.');
+        navigation.replace('MainApp'); // Navegar a la pantalla principal
+      } catch (error) {
+        Alert.alert('Error al iniciar sesión', error.message);
+      }
+    } else {
+      Alert.alert('Error', 'Por favor, completa todos los campos.');
     }
   };
 
+  // Manejar registro
   const handleRegister = async () => {
-    if (username && email && password) {
-      // Simula el registro guardando el token de usuario
-      await AsyncStorage.setItem('userToken', 'abc123');
-      // Aquí puedes implementar la lógica de registro real (API, validaciones, etc.)
-      Alert.alert('Registro exitoso', `Bienvenido, ${username}!`);
-      navigation.replace('MainApp');
+    if (email && password) {
+      try {
+        await registrarUsuario(email, password);
+        Alert.alert('Registro exitoso', 'Has sido registrado con éxito.');
+        navigation.replace('MainApp'); // Navegar a la pantalla principal
+      } catch (error) {
+        Alert.alert('Error en el registro', error.message);
+      }
     } else {
       Alert.alert('Error', 'Por favor, completa todos los campos.');
     }
@@ -50,64 +38,41 @@ export default function WelcomeScreen({ navigation }) {
 
   return (
     <ImageBackground 
-      source={require('../assets/Welcome.jpg')}  // Asegúrate de que la imagen esté en la carpeta assets
+      source={require('../assets/Welcome.jpg')} 
       style={styles.backgroundImage}
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        {!isRegistering ? (
-          <>
-            <Text style={styles.title}>Bienvenido a su app de Facturación e Inventario</Text>
+        <Text style={styles.title}>Bienvenido a la app</Text>
 
-            {/* Botón de Iniciar Sesión */}
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Iniciar sesión</Text>
-            </TouchableOpacity>
+        {/* Campo de correo electrónico */}
+        <TextInput
+          style={styles.input}
+          placeholder="Correo electrónico"
+          placeholderTextColor="#ccc"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-            {/* Botón de Crear Cuenta */}
-            <TouchableOpacity style={styles.button} onPress={() => setIsRegistering(true)}>
-              <Text style={styles.buttonText}>Crear cuenta</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <Text style={styles.title}>Crear Cuenta</Text>
+        {/* Campo de contraseña */}
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor="#ccc"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre de usuario"
-              placeholderTextColor="#ccc"
-              value={username}
-              onChangeText={setUsername}
-            />
+        {/* Botón para iniciar sesión */}
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Correo electrónico"
-              placeholderTextColor="#ccc"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
-              placeholderTextColor="#ccc"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Registrar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.link} onPress={() => setIsRegistering(false)}>
-              <Text style={styles.linkText}>Volver</Text>
-            </TouchableOpacity>
-          </>
-        )}
+        {/* Botón para registrar */}
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Crear cuenta</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -123,7 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Añade un overlay semi-transparente
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   title: {
     fontSize: 24,
@@ -131,6 +96,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  input: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 15,
+    color: '#000',
   },
   button: {
     backgroundColor: '#3498db',
@@ -144,19 +117,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  input: {
-    width: '80%',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 15,
-    color: '#000',
-  },
-  link: {
-    marginTop: 10,
-  },
-  linkText: {
-    color: '#3498db',
-    fontSize: 16,
-  },
 });

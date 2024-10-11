@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 export default function FacturacionStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Facturación" component={FacturacionScreen} />
+      <Stack.Screen name="Facturación" component={FacturacionScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DetalleFactura" component={DetalleFacturaScreen} />
       <Stack.Screen name="CrearFactura" component={CrearFacturaScreen} />
       <Stack.Screen name="EditarFactura" component={EditarFacturaScreen} />
