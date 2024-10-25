@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 export default function ProductosStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Productos" component={ProductosScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Productos1" component={ProductosScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DetalleProducto" component={DetalleProductoScreen} />
       <Stack.Screen name="AgregarProducto" component={AgregarProductoScreen} />
       <Stack.Screen name="EditarProducto" component={EditarProductoScreen} />

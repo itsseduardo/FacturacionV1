@@ -1,82 +1,54 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Styles from '../estilos/Styles';  // Importa los estilos globales
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../credenciales';
 
 export default function AgregarProductoScreen({ navigation }) {
-  const [nombreProducto, setNombreProducto] = useState('');
-  const [descripcion, setDescripcion] = useState('');
+  const [nombre, setNombre] = useState('');
   const [precio, setPrecio] = useState('');
-  const [cantidad, setCantidad] = useState('');
+  const [descripcion, setDescripcion] = useState('');
 
-  const handleAgregarProducto = () => {
-    if (nombreProducto && descripcion && precio && cantidad) {
-      // Simula el registro del producto
-      const Productos = { 
-        nombre: nombreProducto, 
-        descripcion, 
-        precio, 
-        cantidad 
-      };
-
-      // Reiniciar el formulario
-      setNombreProducto('');
-      setDescripcion('');
-      setPrecio('');
-      setCantidad('');
-
-      // Navegar a la pantalla de detalles del producto y pasar los datos del producto
-      navigation.navigate('DetalleProducto', { producto });
+  const handleAgregarProducto = async () => {
+    if (nombre && precio && descripcion) {
+      try {
+        await addDoc(collection(db, 'productos'), {
+          nombre,
+          precio: parseFloat(precio),
+          descripcion
+        });
+        Alert.alert('Producto agregado', `El producto ${nombre} fue agregado con éxito`);
+        navigation.navigate('DetalleProductoScreen');  // Redirige a la pantalla de detalles de producto
+      } catch (error) {
+        console.error('Error al agregar el producto: ', error);
+      }
     } else {
-      Alert.alert('Error', 'Por favor, completa todos los campos.');
+      Alert.alert('Error', 'Por favor completa todos los campos.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar un Nuevo Producto</Text>
-
-      {/* Campo para el nombre del producto */}
+      <Text style={styles.title}>Agregar Producto</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre del producto"
-        placeholderTextColor="#ccc"
-        value={nombreProducto}
-        onChangeText={setNombreProducto}
+        value={nombre}
+        onChangeText={setNombre}
       />
-
-      {/* Campo para la descripción del producto */}
-      <TextInput
-        style={styles.input}
-        placeholder="Descripción"
-        placeholderTextColor="#ccc"
-        value={descripcion}
-        onChangeText={setDescripcion}
-      />
-
-      {/* Campo para el precio del producto */}
       <TextInput
         style={styles.input}
         placeholder="Precio"
-        placeholderTextColor="#ccc"
         keyboardType="numeric"
         value={precio}
         onChangeText={setPrecio}
       />
-
-      {/* Campo para la cantidad del producto */}
       <TextInput
         style={styles.input}
-        placeholder="Cantidad"
-        placeholderTextColor="#ccc"
-        keyboardType="numeric"
-        value={cantidad}
-        onChangeText={setCantidad}
+        placeholder="Descripción"
+        value={descripcion}
+        onChangeText={setDescripcion}
       />
-
-      {/* Botón para agregar el producto */}
-      <TouchableOpacity style={Styles.button} onPress={handleAgregarProducto}>
-        <Text style={Styles.buttonText}>Agregar Producto</Text>
-      </TouchableOpacity>
+      <Button title="Agregar Producto" onPress={handleAgregarProducto} />
     </View>
   );
 }
@@ -84,23 +56,20 @@ export default function AgregarProductoScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
     justifyContent: 'center',
-    padding: 20,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
   },
   input: {
-    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
     padding: 10,
+    marginBottom: 10,
     borderRadius: 5,
-    backgroundColor: '#fff',
-    marginBottom: 15,
-    fontSize: 16,
-    color: '#000',
   },
 });

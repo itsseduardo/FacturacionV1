@@ -1,30 +1,34 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../credenciales';
 
-export default function DetalleProductosScreen({ route, navigation }) {
-  const producto = route.params?.Productos;  // Verifica si existen los parámetros
+export default function DetalleProductoScreen() {
+  const [productos, setProductos] = useState([]);
 
-  // Si no se recibió un producto, muestra un mensaje de error
-  if (!producto) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>No se encontró el producto.</Text>
-      </View>
-    );
-  }
+  useEffect(() => {
+    const fetchProductos = async () => {
+      const productosSnapshot = await getDocs(collection(db, 'productos'));
+      const productosList = productosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProductos(productosList);
+    };
+
+    fetchProductos();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Detalle del Producto</Text>
-      <Text>Nombre: {producto.nombre}</Text>
-      <Text>Descripción: {producto.descripcion}</Text>
-      <Text>Precio: {producto.precio}</Text>
-      <Text>Cantidad: {producto.cantidad}</Text>
-
-      {/* Botón para navegar a la pantalla de edición, pasando los detalles del producto */}
-      <Button 
-        title="Editar Producto" 
-        onPress={() => navigation.navigate('EditarProductos', { Productos: producto })} 
+      <Text style={styles.title}>Lista de Productos</Text>
+      <FlatList
+        data={productos}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.producto}>
+            <Text>{item.nombre}</Text>
+            <Text>Precio: ${item.precio}</Text>
+            <Text>Descripción: {item.descripcion}</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -33,17 +37,16 @@ export default function DetalleProductosScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    padding: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
-  errorText: {
-    fontSize: 18,
-    color: 'red',
+  producto: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });
