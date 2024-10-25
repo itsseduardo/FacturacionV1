@@ -5,17 +5,19 @@ import DetalleFacturaScreen from '../Screens/DetalleFacturaScreen';
 import CrearFacturaScreen from '../Screens/CrearFacturaScreen';
 import EditarFacturaScreen from '../Screens/EditarFacturaScreen';
 import ReportesScreen from '../Screens/ReportesScreen';
+import VistaPreviaFactura from '../Screens/VistaPreviaFactura';
 
 const Stack = createStackNavigator();
 
 export default function FacturacionStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Facturación1" component={FacturacionScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Facturación " component={FacturacionScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DetalleFactura" component={DetalleFacturaScreen} />
       <Stack.Screen name="CrearFactura" component={CrearFacturaScreen} />
       <Stack.Screen name="EditarFactura" component={EditarFacturaScreen} />
       <Stack.Screen name="Reportes" component={ReportesScreen} />
+      <Stack.Screen name="VistaPreviaFactura" component={VistaPreviaFactura} />
     </Stack.Navigator>
   );
 }
