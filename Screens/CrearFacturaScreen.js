@@ -29,6 +29,11 @@ export default function CrearFacturaScreen({ navigation }) {
     fetchProductos();
   }, []);
 
+  // Función para formatear números con separadores de miles
+  const formatearConComas = (numero) => {
+    return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   const handleAgregarFactura = async () => {
     if (cliente && Object.keys(cantidades).length > 0) {
       try {
@@ -38,13 +43,13 @@ export default function CrearFacturaScreen({ navigation }) {
           cantidad: cantidades[productoId],
           fecha: new Date(),
         }));
-
+  
         for (const factura of facturas) {
-          await addDoc(collection(db, 'facturas'), factura);
+          const docRef = await addDoc(collection(db, 'facturas'), factura);
+          navigation.navigate('DetalleFactura', { facturaId: docRef.id });
         }
-
+  
         Alert.alert('Facturas creadas', 'Las facturas se han creado exitosamente');
-        navigation.goBack(); // Regresar a la pantalla anterior
       } catch (error) {
         console.error('Error al crear la factura: ', error);
       }
@@ -58,18 +63,11 @@ export default function CrearFacturaScreen({ navigation }) {
     const yaSeleccionado = seleccionados[productoId];
 
     if (!yaSeleccionado) {
-      // Si no está seleccionado, abrir el modal
       setProductoActual(producto);
-      setCantidadInput(cantidades[productoId]?.toString() || ''); // Prellenar con la cantidad existente
+      setCantidadInput(cantidades[productoId]?.toString() || '');
       setModalVisible(true);
     } else {
-      // Si ya está seleccionado, eliminarlo de la selección
-      const { [productoId]: _, ...rest } = seleccionados;
-      setSeleccionados(rest);
-      setCantidades(prev => {
-        const { [productoId]: _, ...rest } = prev;
-        return rest;
-      });
+      eliminarProducto(productoId);
     }
   };
 
@@ -77,7 +75,7 @@ export default function CrearFacturaScreen({ navigation }) {
     if (cantidadInput) {
       const cantidad = parseInt(cantidadInput, 10);
       if (!isNaN(cantidad) && cantidad > 0) {
-        setCantidades(prev => ({ ...prev, [productoActual.id]: cantidad }));
+        setCantidades(prev => ({ ...prev, [productoActual.id]: cantidad.toString() }));
         setSeleccionados(prev => ({ ...prev, [productoActual.id]: true }));
         setCantidadInput('');
         setModalVisible(false);
@@ -121,11 +119,6 @@ export default function CrearFacturaScreen({ navigation }) {
 
   const total = calcularTotal();
 
-  // Función para formatear el total con comas
-  const formatearTotal = (total) => {
-    return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
   const handleVistaPrevia = () => {
     if (cliente && Object.keys(cantidades).length > 0) {
       const productosSeleccionados = productos.filter(producto => seleccionados[producto.id]);
@@ -156,7 +149,7 @@ export default function CrearFacturaScreen({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.productoItem}>
             <TouchableOpacity onPress={() => toggleSeleccionado(item)}>
-              <Text>{item.nombre} - Precio: ${item.precio}</Text>
+              <Text>{item.nombre} - Precio: ${formatearConComas(item.precio)}</Text>
             </TouchableOpacity>
             {seleccionados[item.id] && (
               <View style={styles.productoAcciones}>
@@ -168,7 +161,7 @@ export default function CrearFacturaScreen({ navigation }) {
           </View>
         )}
       />
-      <Text style={styles.total}>Total: ${formatearTotal(total)}</Text>
+      <Text style={styles.total}>Total: ${formatearConComas(total)}</Text>
       <TouchableOpacity style={styles.button} onPress={handleVistaPrevia}>
         <Text style={styles.buttonText}>Vista Previa Factura</Text>
       </TouchableOpacity>
@@ -176,7 +169,6 @@ export default function CrearFacturaScreen({ navigation }) {
         <Text style={styles.buttonText}>Crear Factura</Text>
       </TouchableOpacity>
 
-      {/* Modal para ingresar la cantidad */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -207,7 +199,6 @@ export default function CrearFacturaScreen({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -221,99 +212,79 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   input: {
-    borderWidth: 1,
     borderColor: '#ccc',
-    padding: 15,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
     marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: '#fff',
   },
   label: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 10,
-    color: '#333',
   },
   productoItem: {
     padding: 15,
     borderRadius: 8,
     backgroundColor: '#fff',
     marginBottom: 10,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    elevation: 2,
   },
   productoAcciones: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 5,
-  },
-  eliminarTexto: {
-    color: '#f44336',
-    fontWeight: 'bold',
+    justifyContent: 'space-between',
   },
   total: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 20,
     textAlign: 'center',
-    color: '#4CAF50',
+    marginVertical: 20,
   },
   button: {
-    backgroundColor: '#4c68af',
+    backgroundColor: '#007bff',
     padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+    borderRadius: 5,
     marginVertical: 10,
   },
   buttonText: {
     color: '#fff',
+    textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: 300,
-    padding: 20,
-    borderRadius: 10,
     backgroundColor: '#fff',
-    elevation: 5,
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center',
   },
   modalInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
-    marginBottom: 15,
     borderRadius: 5,
-    backgroundColor: '#f0f0f0',
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    marginTop: 20,
   },
   modalButton: {
-    backgroundColor: '#4c68af',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#007bff',
     borderRadius: 5,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
   },
   modalButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
   },
 });

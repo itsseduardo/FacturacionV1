@@ -15,7 +15,7 @@ export default function AgregarProductoScreen({ navigation }) {
     const auth = getAuth();
     const user = auth.currentUser; // Obtiene el usuario autenticado actualmente
 
-    if (nombre && precio && descripcion) {
+    if (nombre && precio && descripcion && cantidad) {
       try {
         // Agrega el producto a Firestore
         await addDoc(collection(db, 'productos'), {
@@ -24,6 +24,8 @@ export default function AgregarProductoScreen({ navigation }) {
           descripcion,
           cantidad: parseInt(cantidad), // Guarda la cantidad como entero
           userId: user.uid, // Almacena el userId del usuario actual
+          enEspera: false,  // Nuevo campo, inicialmente en false
+          fechaEliminacion: null,  // Nuevo campo, inicialmente en null
         });
 
         // Alerta de éxito
@@ -39,7 +41,7 @@ export default function AgregarProductoScreen({ navigation }) {
           screen: 'ProductosStacks', // El nombre del stack que contiene la pantalla DetalleProductoScreen
           params: {
             screen: 'DetalleProducto', // La pantalla específica dentro del stack
-            params: { nombre, precio, descripcion }, // Puedes pasar los parámetros si es necesario
+            params: { nombre, precio, descripcion, cantidad }, // Puedes pasar los parámetros si es necesario
           },
         });
       } catch (error) {

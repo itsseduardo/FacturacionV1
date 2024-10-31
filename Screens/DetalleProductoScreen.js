@@ -4,6 +4,7 @@ import { collection, query, where, deleteDoc, doc, onSnapshot } from 'firebase/f
 import { getAuth } from 'firebase/auth';
 import { db } from '../credenciales';
 import Icon from 'react-native-vector-icons/Ionicons'; // Asegúrate de tener este paquete instalado
+import { eliminarProductoTemporalmente, revertirEliminacionProducto } from '../utils/productos';
 
 export default function DetalleProductoScreen({ navigation }) {
   const [productos, setProductos] = useState([]);
@@ -39,13 +40,24 @@ export default function DetalleProductoScreen({ navigation }) {
     }
   }, [searchText, productos]);
 
-  const handleDelete = async (productoId) => {
-    try {
-      await deleteDoc(doc(db, 'productos', productoId));
-      Alert.alert('Producto eliminado', 'El producto ha sido eliminado con éxito');
-    } catch (error) {
-      console.error('Error al eliminar el producto:', error);
-    }
+  const handleDelete = (productoId) => {
+    Alert.alert(
+      'Confirmación de Eliminación',
+      '¿Estás seguro de que deseas eliminar este producto? Tienes 15 días para revertir la decisión.',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: async () => {
+            await eliminarProductoTemporalmente(productoId);
+            Alert.alert('Producto en espera de eliminación', 'Este producto ha sido marcado para eliminación en 15 días.');
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -61,28 +73,40 @@ export default function DetalleProductoScreen({ navigation }) {
         />
       </View>
       <FlatList
-        data={filteredProductos}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.producto}>
-            <Text style={styles.productoNombre}>{item.nombre}</Text>
-            <Text style={styles.productoPrecio}>Precio: ${item.precio}</Text>
-            <Text style={styles.productoDescripcion}>Descripción: {item.descripcion}</Text>
-            <Text>Cantidad: {item.cantidad}</Text>
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Editar"
-                onPress={() => navigation.navigate('EditarProducto', { productoId: item.id })}
-              />
-              <Button
-                title="Eliminar"
-                color="red"
-                onPress={() => handleDelete(item.id)}
-              />
-            </View>
-          </View>
+  data={filteredProductos}
+  keyExtractor={item => item.id}
+  renderItem={({ item }) => (
+    <View style={styles.producto}>
+      <Text style={styles.productoNombre}>{item.nombre}</Text>
+      <Text style={styles.productoPrecio}>Precio: ${item.precio}</Text>
+      <Text style={styles.productoDescripcion}>Descripción: {item.descripcion}</Text>
+      <Text>Cantidad: {item.cantidad}</Text>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Editar"
+          onPress={() => navigation.navigate('EditarProducto', { productoId: item.id })}
+        />
+        {item.enEspera ? (
+          <Button
+            title="Restaurar"
+            color="blue"
+            onPress={async () => {
+              await revertirEliminacionProducto(item.id);
+              Alert.alert('Producto restaurado', 'Este producto ya no está en espera de eliminación.');
+            }}
+          />
+        ) : (
+          <Button
+            title="Eliminar"
+            color="red"
+            onPress={() => handleDelete(item.id)}
+          />
         )}
-      />
+      </View>
+    </View>
+  )}
+/>
+
     </View>
   );
 }
