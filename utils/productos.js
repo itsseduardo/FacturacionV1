@@ -1,4 +1,3 @@
-// utils/productos.js
 
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../credenciales';

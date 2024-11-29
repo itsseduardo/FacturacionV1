@@ -18,6 +18,7 @@ export default function FacturacionStack() {
       <Stack.Screen name="EditarFactura" component={EditarFacturaScreen} />
       <Stack.Screen name="Reportes" component={ReportesScreen} />
       <Stack.Screen name="VistaPreviaFactura" component={VistaPreviaFactura} />
+     
     </Stack.Navigator>
   );
 }
