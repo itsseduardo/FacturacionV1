@@ -1,28 +1,33 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import WelcomeScreen from './Screens/WelcomeScreen'; // Importa la pantalla de bienvenida
-import TabNavigator from './navegacion/TabNavigator'; // Importa el TabNavigator principal
+import WelcomeScreen from './Screens/WelcomeScreen';
+import TabNavigator from './navegacion/TabNavigator';
+import { ThemeProvider, ThemeContext } from './context/ThemeContext';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
-        {/* Pantalla de bienvenida */}
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }} // Oculta el header de la pantalla de bienvenida
-        />
-        {/* Pantalla principal con las tabs */}
-        <Stack.Screen
-          name="MainApp"
-          component={TabNavigator} // TabNavigator principal
-          options={{ headerShown: false }} // Oculta el header en la navegación principal
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    <ThemeProvider>
+      <ThemeContext.Consumer>
+        {({ theme }) => (
+          <NavigationContainer theme={theme}>
+            <Stack.Navigator initialRouteName="Welcome">
+              <Stack.Screen
+                name="Welcome"
+                component={WelcomeScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="MainApp"
+                component={TabNavigator}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>            
+          </NavigationContainer>
+        )}
+      </ThemeContext.Consumer>
+    </ThemeProvider>
+  );
 }

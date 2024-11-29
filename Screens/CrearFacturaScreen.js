@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Alert, TouchableOpacity, Modal } from 'react-native';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../credenciales';
 import { getAuth } from 'firebase/auth';
+import { ThemeContext } from '../context/ThemeContext';
 
 export default function CrearFacturaScreen({ navigation }) {
   const [cliente, setCliente] = useState('');
@@ -12,6 +13,7 @@ export default function CrearFacturaScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [productoActual, setProductoActual] = useState(null);
   const [cantidadInput, setCantidadInput] = useState('');
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -29,9 +31,8 @@ export default function CrearFacturaScreen({ navigation }) {
     fetchProductos();
   }, []);
 
-  // Función para formatear números con separadores de miles
   const formatearConComas = (numero) => {
-    return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const handleAgregarFactura = async () => {
@@ -43,12 +44,12 @@ export default function CrearFacturaScreen({ navigation }) {
           cantidad: cantidades[productoId],
           fecha: new Date(),
         }));
-  
+
         for (const factura of facturas) {
           const docRef = await addDoc(collection(db, 'facturas'), factura);
           navigation.navigate('DetalleFactura', { facturaId: docRef.id });
         }
-  
+
         Alert.alert('Facturas creadas', 'Las facturas se han creado exitosamente');
       } catch (error) {
         console.error('Error al crear la factura: ', error);
@@ -134,63 +135,93 @@ export default function CrearFacturaScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Crear Factura</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Crear Factura</Text>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            borderColor: theme.colors.text,
+            backgroundColor: theme.colors.card,
+            color: theme.colors.text, // Ajuste del color del texto
+          },
+        ]}
         placeholder="Nombre del Cliente"
         value={cliente}
         onChangeText={setCliente}
+        placeholderTextColor={theme.colors.placeholder}
       />
-      <Text style={styles.label}>Seleccionar Productos</Text>
+      <Text style={[styles.label, { color: theme.colors.text }]}>Seleccionar Productos</Text>
       <FlatList
         data={productos}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.productoItem}>
+          <View style={[styles.productoItem, { backgroundColor: theme.colors.card }]}>
             <TouchableOpacity onPress={() => toggleSeleccionado(item)}>
-              <Text>{item.nombre} - Precio: ${formatearConComas(item.precio)}</Text>
+              <Text style={[styles.text, { color: theme.colors.text }]}>
+                {item.nombre} - Precio: ${formatearConComas(item.precio)}
+              </Text>
             </TouchableOpacity>
             {seleccionados[item.id] && (
               <View style={styles.productoAcciones}>
                 <TouchableOpacity onPress={() => eliminarProducto(item.id)}>
-                  <Text style={styles.eliminarTexto}>Eliminar</Text>
+                  <Text style={[styles.eliminarTexto, { color: '#ff3b30' }]}>Eliminar</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
         )}
       />
-      <Text style={styles.total}>Total: ${formatearConComas(total)}</Text>
-      <TouchableOpacity style={styles.button} onPress={handleVistaPrevia}>
+      <Text style={[styles.total, { color: theme.colors.text }]}>Total: ${formatearConComas(total)}</Text>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.colors.primary }]}
+        onPress={handleVistaPrevia}
+      >
         <Text style={styles.buttonText}>Vista Previa Factura</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleAgregarFactura}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.colors.primary }]}
+        onPress={handleAgregarFactura}
+      >
         <Text style={styles.buttonText}>Crear Factura</Text>
       </TouchableOpacity>
 
+      {/* Modal */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Ingrese la Cantidad</Text>
+        <View style={[styles.modalContainer, { backgroundColor: theme.colors.modalBackground }]}>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Ingrese la Cantidad</Text>
             <TextInput
-              style={styles.modalInput}
+              style={[
+                styles.modalInput,
+                {
+                  borderColor: theme.colors.text,
+                  color: theme.colors.text, // Ajuste del color del texto
+                },
+              ]}
               placeholder="Cantidad"
               keyboardType="numeric"
               value={cantidadInput}
               onChangeText={setCantidadInput}
+              placeholderTextColor={theme.colors.placeholder}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleConfirmarCantidad}>
-                <Text style={styles.modalButtonText}>OK</Text>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+                onPress={handleConfirmarCantidad}
+              >
+                <Text style={[styles.modalButtonText, { color: '#fff' }]}>OK</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalButtonText}>Cancelar</Text>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: '#ff3b30' }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={[styles.modalButtonText, { color: '#fff' }]}>Cancelar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -199,92 +230,101 @@ export default function CrearFacturaScreen({ navigation }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f0f0',
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 15,
+    fontSize: 16,
   },
   title: {
     fontSize: 28,
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
-  },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+    fontWeight: '600',
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
   },
   productoItem: {
     padding: 15,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    elevation: 2,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
   },
-  productoAcciones: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  text: {
+    fontSize: 16,
+  },
+  eliminarTexto: {
+    fontWeight: 'bold',
+    color: '#ff3b30',
   },
   total: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 18,
     marginVertical: 20,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 5,
-    marginVertical: 10,
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 15,
   },
   buttonText: {
+    fontSize: 16,
     color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    width: '80%',
+    borderRadius: 15,
     padding: 20,
-    margin: 20,
-    borderRadius: 10,
+    alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
     marginBottom: 10,
+    fontWeight: '500',
   },
   modalInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 15,
+    width: '100%',
+    fontSize: 16,
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
+    justifyContent: 'space-evenly',
+    width: '100%',
   },
   modalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#007bff',
-    borderRadius: 5,
+    padding: 12,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    flex: 1,
+    alignItems: 'center',
   },
   modalButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });

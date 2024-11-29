@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../credenciales';
+import { ThemeContext } from '../context/ThemeContext';
 
 export default function EditarProductoScreen({ route, navigation }) {
   const { productoId } = route.params;
@@ -9,9 +10,9 @@ export default function EditarProductoScreen({ route, navigation }) {
   const [precio, setPrecio] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [cantidad, setCantidad] = useState('');
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
-    // Cargar datos del producto para editar
     const cargarProducto = async () => {
       try {
         const productoRef = doc(db, 'productos', productoId);
@@ -40,10 +41,10 @@ export default function EditarProductoScreen({ route, navigation }) {
           nombre,
           precio: parseFloat(precio),
           descripcion,
-          cantidad: parseInt(cantidad), // Actualizamos el stock
+          cantidad: parseInt(cantidad),
         });
         Alert.alert('Producto actualizado', `El producto ${nombre} fue actualizado con éxito`);
-        navigation.goBack(); // Vuelve a la pantalla anterior
+        navigation.goBack();
       } catch (error) {
         console.error('Error al actualizar el producto: ', error);
       }
@@ -52,36 +53,46 @@ export default function EditarProductoScreen({ route, navigation }) {
     }
   };
 
+  const placeholderColor = theme.dark ? '#a9a9a9' : '#6e6e6e';
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Editar Producto</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Editar Producto</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}
         placeholder="Nombre del producto"
+        placeholderTextColor={placeholderColor}
         value={nombre}
         onChangeText={setNombre}
+        selectionColor={theme.colors.primary}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}
         placeholder="Precio"
         keyboardType="numeric"
+        placeholderTextColor={placeholderColor}
         value={precio}
         onChangeText={setPrecio}
+        selectionColor={theme.colors.primary}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}
         placeholder="Descripción"
+        placeholderTextColor={placeholderColor}
         value={descripcion}
         onChangeText={setDescripcion}
+        selectionColor={theme.colors.primary}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}
         placeholder="Cantidad"
         keyboardType="numeric"
+        placeholderTextColor={placeholderColor}
         value={cantidad}
         onChangeText={setCantidad}
+        selectionColor={theme.colors.primary}
       />
-      <TouchableOpacity style={styles.button} onPress={handleActualizarProducto}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.primary }]} onPress={handleActualizarProducto}>
         <Text style={styles.buttonText}>Actualizar Producto</Text>
       </TouchableOpacity>
     </View>
@@ -93,24 +104,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#f0f0f0',
   },
   title: {
     fontSize: 28,
     marginBottom: 30,
     textAlign: 'center',
-    color: '#333',
+    fontWeight: 'bold',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     padding: 15,
     marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    borderRadius: 10,
+    fontSize: 16,
   },
   button: {
-    backgroundColor: '#4c68af',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -118,5 +126,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-  },
+    fontWeight: 'bold',
+  },
 });

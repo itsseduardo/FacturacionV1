@@ -99,5 +99,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
     textAlign: 'center',
-  },
+  },
 });

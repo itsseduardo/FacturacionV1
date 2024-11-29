@@ -1,36 +1,43 @@
-import React from 'react';
-import { View, Text, Button, Image } from 'react-native';
-import Styles from '../estilos/Styles';
+import React, { useContext } from 'react';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from '../context/ThemeContext';
+import Styles from '../estilos/Styles';
 
 export default function ConfiguracionesScreen({ navigation }) {
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const handleLogout = async () => {
     try {
-      // Elimina el token de usuario
       await AsyncStorage.removeItem('userToken');
-      // Redirige a la pantalla de bienvenida
+      Alert.alert('Sesión cerrada', 'Has salido de tu cuenta correctamente.');
       navigation.replace('Welcome');
-    } catch (e) {
-      console.log('Error al cerrar sesión');
+    } catch (error) {
+      Alert.alert('Error', 'Hubo un problema al cerrar la sesión. Inténtalo de nuevo.');
+      console.error('Error al cerrar sesión:', error);
     }
   };
 
   return (
-    <View style={Styles.container}>
-      {/* Agregar imagen */}
-      <Image 
-        source={require('../assets/gear_850666.png')} 
-        style={Styles.image}  // Usar el estilo global para la imagen
-      />
-      
-      {/* Texto centrado */}
-      <Text style={Styles.titleText}>Pantalla de Configuraciones</Text>
-      
-      {/* Botón de cerrar sesión */}
-      <View style={Styles.buttonContainer}>
-        <Button title="Cerrar sesión" onPress={handleLogout} />
-      </View>
+    <View style={[Styles.container, { backgroundColor: theme?.colors?.background || '#FFF' }]}>
+      <Text style={[Styles.titleText, { color: theme?.colors?.text || '#000' }]}>
+        Configuración
+      </Text>
+
+      <TouchableOpacity
+        style={Styles.button}
+        onPress={() => navigation.navigate('UpdatePassword')} // Nombre definido en el Stack.Navigator
+      >
+        <Text style={Styles.buttonText}>Actualizar contraseña</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={Styles.button} onPress={toggleTheme}>
+        <Text style={Styles.buttonText}>Cambiar tema</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={Styles.button} onPress={handleLogout}>
+        <Text style={Styles.buttonText}>Cerrar sesión</Text>
+      </TouchableOpacity>
     </View>
   );
 }

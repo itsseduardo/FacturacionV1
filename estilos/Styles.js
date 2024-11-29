@@ -6,20 +6,18 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   titleText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black',
     marginBottom: 16,
   },
   button: {
-    backgroundColor: '#3498db',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#007AFF', // iOS blue color
+    marginBottom: 10,
     alignItems: 'center',
   },
   buttonText: {
@@ -27,12 +25,6 @@ const Styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  image: {
-    width: 450, // Cambia el ancho según lo que necesites
-    height: 500, // Cambia la altura según lo que necesites
-    resizeMode: 'hover', // Mantiene la proporción de la imagen
-    marginVertical: 10,
-  },
 });
 
-export default Styles;
+export default Styles;

@@ -1,64 +1,50 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from 'react-native-vector-icons';
-import Styles from '../estilos/Styles';
-
-
-// Importa los StackNavigators
 import ProductosStack from './ProductosStacks';
 import FacturacionStack from './FacturacionStacks';
-import ReportesScreen from '../Screens/ReportesScreen'; // stack para reportes
-import ClientesScreen from '../Screens/ClientesScreen';  // Stack para clientes
-import ConfiguracionesScreen from '../Screens/ConfiguracionesScreen';// Stack para configuraciones
+import ReportesScreen from '../Screens/ReportesScreen';
+import ClientesStack from './ClientesStack';
+import { ThemeContext } from '../context/ThemeContext';
+import ConfiguracionesStack from './ConfiguracionesStack';
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+export default function TabNavigator() {
+  const { theme } = useContext(ThemeContext);
+
   return (
-   
     <Tab.Navigator
-    screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
-        let iconName;
-  
-        if (route.name === 'Productos') {
-          iconName = focused ? 'cart' : 'cart-outline';
-        } else if (route.name === 'Facturación') {
-          iconName = focused ? 'document-text' : 'document-text-outline';
-        } else if (route.name === 'Reportes') {
-          iconName = focused ? 'stats-chart' : 'stats-chart-outline';
-        } else if (route.name === 'Clientes') {
-          iconName = focused ? 'people' : 'people-outline';
-        } else if (route.name === 'Configuraciones') {
-          iconName = focused ? 'settings' : 'settings-outline';  
-        }
-  
-        return <Ionicons name={iconName} size={size} color={color} />;
-      
-          },
-          tabBarActiveTintColor: 'red',  // Color cuando la pestaña está activa
-          tabBarInactiveTintColor: 'black',  // Color cuando la pestaña está inactiva
-          tabBarStyle: {
-            backgroundColor: '#fff',  // Color del fondo de las pestañas
-            paddingBottom: 20,  // Ajuste del padding inferior
-            height: 80,  // Altura de la barra de pestañas
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,  // Tamaño de la fuente de las etiquetas
-            fontWeight: 'bold',  // Negrita en las etiquetas
-          },
-          tabBarIconStyle: {
-            marginBottom: -10,  // Ajusta la posición del ícono
-          },
-        })}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Productos') {
+            iconName = focused ? 'cart' : 'cart-outline';
+          } else if (route.name === 'Facturación') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
+          } else if (route.name === 'Reportes') {
+            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          } else if (route.name === 'Clientes') {
+            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Configuraciones') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.text,
+        tabBarStyle: {
+          backgroundColor: theme.colors.card,
+        },
+      })}
     >
-      <Tab.Screen name="Productos" component={ProductosStack} options={{ headerShown: false }}/>
-      <Tab.Screen name="Facturación" component={FacturacionStack} options={{ headerShown: false }}/>
-      <Tab.Screen name="Reportes" component={ReportesScreen} options={{ headerShown: false }}/>
-      <Tab.Screen name="Clientes" component={ClientesScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Configuraciones" component={ConfiguracionesScreen} options={{ headerShown: false }}/>
-      </Tab.Navigator>
-    
-  );
+      <Tab.Screen name="Productos" component={ProductosStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Facturación" component={FacturacionStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Reportes" component={ReportesScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Clientes" component={ClientesStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Configuraciones" component={ConfiguracionesStack} options={{ headerShown: false }} />
+    </Tab.Navigator>
+  );
 }

@@ -5,9 +5,9 @@ import Styles from '../estilos/Styles';  // Importa los estilos globales
 export default function ProductosScreen({ navigation }) {
   return (
     <ImageBackground 
-      source={require('../assets/shopping_16507871.png')} 
+      source={require('../assets/producto3333333.jpg')} 
       style={Styles.container}
-      resizeMode 
+      resizeMode='hover'
     >
       <Text style={Styles.titleText}>Lista de Productos</Text>  
       

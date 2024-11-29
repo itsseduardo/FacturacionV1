@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TextInput, FlatList, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../credenciales';
+import { ThemeContext } from '../context/ThemeContext';
 
 export default function EditarFacturaScreen({ route, navigation }) {
   const { facturaId } = route.params;
   const [factura, setFactura] = useState(null);
   const [cantidades, setCantidades] = useState({});
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const obtenerFactura = async () => {
@@ -61,35 +63,39 @@ export default function EditarFacturaScreen({ route, navigation }) {
 
   if (!factura) {
     return (
-      <View style={styles.container}>
-        <Text>Cargando...</Text>
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <Text style={[styles.text, { color: theme.colors.text }]}>Cargando...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Editar Factura</Text>
-      <Text style={styles.label}>Cliente: {factura.cliente}</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Editar Factura</Text>
+      <Text style={[styles.label, { color: theme.colors.text }]}>Cliente: {factura.cliente}</Text>
 
       <FlatList
         data={factura.productos}
         keyExtractor={(item) => item.productoId}
         renderItem={({ item }) => (
-          <View style={styles.productoItem}>
-            <Text>{item.nombre}</Text>
+          <View style={[styles.productoItem, { backgroundColor: theme.colors.card }]}>
+            <Text style={[styles.text, { color: theme.colors.text }]}>{item.nombre}</Text>
             <TextInput
-              style={styles.inputCantidad}
+              style={[styles.inputCantidad, { borderColor: theme.colors.text, backgroundColor: theme.colors.card }]}
               keyboardType="numeric"
               value={cantidades[item.productoId]?.toString() || ''}
               onChangeText={(cantidad) => actualizarCantidad(item.productoId, parseInt(cantidad))}
+              placeholderTextColor={theme.colors.placeholder}
+              selectionColor={theme.colors.primary}
             />
-            <Text>Precio: ${item.precio}</Text>
+            <Text style={[styles.text, { color: theme.colors.text }]}>Precio: ${item.precio}</Text>
           </View>
         )}
       />
 
-      <Button title="Guardar Cambios" onPress={guardarCambios} />
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.primary }]} onPress={guardarCambios}>
+        <Text style={styles.buttonText}>Guardar Cambios</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -98,7 +104,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f0f0',
   },
   title: {
     fontSize: 24,
@@ -112,16 +117,25 @@ const styles = StyleSheet.create({
   },
   productoItem: {
     padding: 10,
-    backgroundColor: '#fff',
     marginBottom: 10,
     borderRadius: 5,
   },
+  text: {
+    fontSize: 16,
+  },
   inputCantidad: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
+    padding: 10,
     marginVertical: 5,
     borderRadius: 5,
-    backgroundColor: '#fff',
   },
+  button: {
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
