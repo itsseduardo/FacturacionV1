@@ -5,7 +5,7 @@ import Styles from '../estilos/Styles';  // Importa los estilos globales
 export default function ProductosScreen({ navigation }) {
   return (
     <ImageBackground 
-      source={require('../assets/producto3333333.jpg')} 
+      source={require('../assets/image-removebg-preview (25).png')} 
       style={Styles.container}
       resizeMode='hover'
     >

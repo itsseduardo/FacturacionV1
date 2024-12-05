@@ -10,7 +10,6 @@ export default function DetalleClienteScreen({ navigation }) {
   const { theme } = useContext(ThemeContext);
   const [clientes, setClientes] = useState([]);
 
-  // Función para cargar clientes desde Firestore
   const cargarClientes = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, 'clientes'));
@@ -21,14 +20,12 @@ export default function DetalleClienteScreen({ navigation }) {
     }
   };
 
-  // Recargar clientes al volver a la pantalla
   useFocusEffect(
     useCallback(() => {
       cargarClientes();
     }, [])
   );
 
-  // Eliminar cliente de Firestore
   const eliminarCliente = async (clienteId) => {
     try {
       await deleteDoc(doc(db, 'clientes', clienteId));
@@ -40,7 +37,6 @@ export default function DetalleClienteScreen({ navigation }) {
     }
   };
 
-  // Confirmación para eliminar
   const confirmarEliminacion = (clienteId) => {
     Alert.alert(
       'Eliminar Cliente',
@@ -52,7 +48,6 @@ export default function DetalleClienteScreen({ navigation }) {
     );
   };
 
-  // Renderizar cada cliente
   const renderCliente = ({ item }) => (
     <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
       <Text style={[styles.nombre, { color: theme.colors.text }]}>{item.nombre}</Text>
@@ -60,21 +55,24 @@ export default function DetalleClienteScreen({ navigation }) {
       <Text style={[styles.detalle, { color: theme.colors.text }]}>Correo: {item.correo}</Text>
       <Text style={[styles.detalle, { color: theme.colors.text }]}>Dirección: {item.direccion}</Text>
 
-      {/* Botón Editar */}
-      <TouchableOpacity
-        style={[styles.boton, styles.botonEditar]}
-        onPress={() => navigation.navigate('EditarCliente', { clienteId: item.id })}
-      >
-        <Text style={styles.botonTexto}>Editar</Text>
-      </TouchableOpacity>
+      {/* Contenedor para los botones */}
+      <View style={styles.botonesContainer}>
+        {/* Botón Editar */}
+        <TouchableOpacity
+          style={[styles.boton, styles.botonEditar]}
+          onPress={() => navigation.navigate('EditarCliente', { clienteId: item.id })}
+        >
+          <Text style={styles.botonTexto}>Editar</Text>
+        </TouchableOpacity>
 
-      {/* Botón Eliminar */}
-      <TouchableOpacity
-        style={[styles.boton, styles.botonEliminar]}
-        onPress={() => confirmarEliminacion(item.id)}
-      >
-        <Text style={styles.botonTexto}>Eliminar</Text>
-      </TouchableOpacity>
+        {/* Botón Eliminar */}
+        <TouchableOpacity
+          style={[styles.boton, styles.botonEliminar]}
+          onPress={() => confirmarEliminacion(item.id)}
+        >
+          <Text style={styles.botonTexto}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -125,20 +123,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
   },
+  botonesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    marginTop: 10,
+  },
   boton: {
+    flex: 1, 
     padding: 10,
     borderRadius: 8,
-    marginTop: 10,
+    marginHorizontal: 5, 
   },
   botonEditar: {
     backgroundColor: '#007BFF',
   },
   botonEliminar: {
-    backgroundColor: '#FF4D4F',
+    backgroundColor: 'red',
   },
   botonTexto: {
     color: '#FFF',
     textAlign: 'center',
     fontWeight: 'bold',
-  },
+  },
 });

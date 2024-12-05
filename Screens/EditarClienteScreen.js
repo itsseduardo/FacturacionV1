@@ -61,21 +61,21 @@ export default function EditarClienteScreen({ route, navigation }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text style={[styles.title, { color: theme.colors.text }]}>Editar Cliente</Text>
       <TextInput
-        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
+        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text, borderColor: theme.colors.border }]}
         placeholder="Nombre"
         placeholderTextColor={theme.colors.placeholder}
         value={nombre}
         onChangeText={setNombre}
       />
       <TextInput
-        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
+        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text, borderColor: theme.colors.border }]}
         placeholder="Teléfono"
         placeholderTextColor={theme.colors.placeholder}
         value={telefono}
         onChangeText={setTelefono}
       />
       <TextInput
-        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
+        style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text, borderColor: theme.colors.border }]}
         placeholder="Dirección"
         placeholderTextColor={theme.colors.placeholder}
         value={direccion}
@@ -92,17 +92,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    fontWeight: '600',
   },
   input: {
-    padding: 10,
-    borderRadius: 8,
+    height: 50,
+    borderRadius: 12,
     marginBottom: 15,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  button: {
+    height: 50,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   botonGuardar: {
     padding: 15,
@@ -117,5 +141,5 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     textAlign: 'center',
-  },
+  },
 });
